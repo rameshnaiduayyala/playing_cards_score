@@ -5,6 +5,7 @@ export default function App() {
   const [numPlayers, setNumPlayers] = useState(1);
   const [playerData, setPlayerData] = useState([]);
   const [showTable, setShowTable] = useState(false);
+  const [showCards, setShowCards] = useState(false);
 
   const handleNumPlayersChange = (event) => {
     const newValue = parseInt(event.target.value);
@@ -13,6 +14,12 @@ export default function App() {
 
   const handleShowTable = () => {
     setShowTable(true);
+  };
+  const handleCards = () => {
+    setShowCards(true);
+  };
+  const handleCardsoff = () => {
+    setShowCards(false);
   };
 
   const handleScoreChange = (index, score) => {
@@ -45,7 +52,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <h1>Score Tracking App</h1>
+      <h3>Score Track by Ramesh Ayyala </h3>
       {!showTable && (
         <>
           <label>Select number of Players: </label>
@@ -64,6 +71,7 @@ export default function App() {
               <tr>
                 <th>Player Name</th>
                 <th>Score</th>
+                <th>Total</th>
               </tr>
             </thead>
             <tbody>
@@ -78,10 +86,19 @@ export default function App() {
                       onChange={(event) => handleScoreChange(index, event.target.value)}
                     />
                   </td>
+                  <td>{player.score}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <button>Submit</button>
+          <button onClick={handleCards}>Show Table</button>
+          <button onClick={handleCardsoff}>Show Table</button>
+          {
+            showCards && (
+              <h1>hjhh</h1>
+            )
+          }
         </div>
       )}
     </div>
