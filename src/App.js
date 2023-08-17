@@ -1,11 +1,32 @@
 import React, { useState } from 'react';
 import './App.css';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 6,
+};
 
 export default function App() {
   const [numPlayers, setNumPlayers] = useState(1);
   const [playerData, setPlayerData] = useState([]);
   const [showTable, setShowTable] = useState(false);
-  const [showCards, setShowCards] = useState(false);
+
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const handleNumPlayersChange = (event) => {
     const newValue = parseInt(event.target.value);
@@ -14,12 +35,6 @@ export default function App() {
 
   const handleShowTable = () => {
     setShowTable(true);
-  };
-  const handleCards = () => {
-    setShowCards(true);
-  };
-  const handleCardsoff = () => {
-    setShowCards(false);
   };
 
   const handleScoreChange = (index, score) => {
@@ -51,6 +66,7 @@ export default function App() {
   };
 
   return (
+    <>
     <div className="App">
       <h3>Score Track by Ramesh Ayyala </h3>
       {!showTable && (
@@ -70,8 +86,44 @@ export default function App() {
             <thead>
               <tr>
                 <th>Player Name</th>
+                <th> Total Score</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              {playerData.map((player, index) => (
+                <tr key={index}>
+                  <td>{player.name || `Player ${index + 1}`}</td>
+                  <td>
+                    <input
+                      type="number"
+                      placeholder="Enter Score"
+                      value={player.score || 0}
+                      
+                    />
+                  </td>
+                  
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button>Submit</button>
+     
+              <div>
+              <Button onClick={handleOpen}>Open modal</Button>
+              <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box sx={style}>
+                <table>
+            <thead>
+              <tr>
+                <th>Player Name</th>
                 <th>Score</th>
-                <th>Total</th>
+
               </tr>
             </thead>
             <tbody>
@@ -86,21 +138,18 @@ export default function App() {
                       onChange={(event) => handleScoreChange(index, event.target.value)}
                     />
                   </td>
-                  <td>{player.score}</td>
+                  
                 </tr>
               ))}
             </tbody>
           </table>
-          <button>Submit</button>
-          <button onClick={handleCards}>Show Table</button>
-          <button onClick={handleCardsoff}>Show Table</button>
-          {
-            showCards && (
-              <h1>hjhh</h1>
-            )
-          }
+                </Box>
+              </Modal>
+            </div>
+        
         </div>
       )}
     </div>
+    </>
   );
 }
