@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
-import Typography from '@mui/material/Typography';
+
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -22,6 +22,8 @@ export default function App() {
   const [numPlayers, setNumPlayers] = useState(1);
   const [playerData, setPlayerData] = useState([]);
   const [showTable, setShowTable] = useState(false);
+  const [columns, setColumns] = useState(1);
+  const [rows, setRows] = useState(1);
 
 
   const [open, setOpen] = React.useState(false);
@@ -32,7 +34,9 @@ export default function App() {
     const newValue = parseInt(event.target.value);
     setNumPlayers(newValue);
   };
-
+  const addColumn = () => {
+    setColumns(columns + 1);
+  };
   const handleShowTable = () => {
     setShowTable(true);
   };
@@ -87,7 +91,11 @@ export default function App() {
               <tr>
                 <th>Player Name</th>
                 <th> Total Score</th>
-                
+                <tr>
+            {Array.from({ length: columns }, (_, index) => (
+              <th key={index}>Column {index + 1}</th>
+            ))}
+          </tr>
               </tr>
             </thead>
             <tbody>
@@ -98,7 +106,7 @@ export default function App() {
                     <input
                       type="number"
                       placeholder="Enter Score"
-                      value={player.score || 0}
+                      value={player.score}
                       
                     />
                   </td>
@@ -107,10 +115,10 @@ export default function App() {
               ))}
             </tbody>
           </table>
-          <button>Submit</button>
+          
      
               <div>
-              <Button onClick={handleOpen}>Open modal</Button>
+              <Button onClick={handleOpen}>Add Score</Button>
               <Modal
                 open={open}
                 onClose={handleClose}
@@ -134,15 +142,16 @@ export default function App() {
                     <input
                       type="number"
                       placeholder="Enter Score"
-                      value={player.score || 0}
+                      value={player.score}
                       onChange={(event) => handleScoreChange(index, event.target.value)}
                     />
                   </td>
-                  
                 </tr>
               ))}
             </tbody>
           </table>
+          <Button onClick={addColumn}>Add Scores</Button>
+          <Button onClick={handleClose}>Close</Button>
                 </Box>
               </Modal>
             </div>
