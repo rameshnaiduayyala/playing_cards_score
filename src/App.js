@@ -84,6 +84,7 @@ function App() {
         round={round}
         addScore={addScore}
       />
+      <button onClick={handleNextRound}>Next Round</button>
       <Button onClick={handleOpenT}>Show Score</Button>
       <Modal
         aria-labelledby="transition-modal-title"
