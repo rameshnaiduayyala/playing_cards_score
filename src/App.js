@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import './App.css';
-
-import Modal from '@mui/material/Modal';
+import PlayerList from './PlayerList';
+import ScoreTable from './ScoreTable';
+import PlayerForm from './PlayerForm';
+import ScoreForm from './ScoreForm';
+import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import Fade from '@mui/material/Fade';
 import Button from '@mui/material/Button';
 
 
@@ -15,150 +20,101 @@ const style = {
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
-  p: 6,
+  p: 4,
 };
 
-export default function App() {
-  const [numPlayers, setNumPlayers] = useState(1);
-  const [playerData, setPlayerData] = useState([]);
-  const [showTable, setShowTable] = useState(false);
-  const [columns, setColumns] = useState(1);
-  const [rows, setRows] = useState(1);
-
-
+function App() {
+  const [players, setPlayers] = useState([]);
+  const [round, setRound] = useState(1);
+  const [scores, setScores] = useState([]);
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpenT = () => setOpen(true);
+  const handleCloseT = () => setOpen(false);
+  const [isDivVisible, setDivVisible] = useState(true);
 
-  const handleNumPlayersChange = (event) => {
-    const newValue = parseInt(event.target.value);
-    setNumPlayers(newValue);
+ 
+  const handleButtonClick = () => {
+    setDivVisible(false);
   };
-  const addColumn = () => {
-    setColumns(columns + 1);
-  };
-  const handleShowTable = () => {
-    setShowTable(true);
-  };
-
-  const handleScoreChange = (index, score) => {
-    const newPlayerData = [...playerData];
-    newPlayerData[index].score = parseInt(score);
-    setPlayerData(newPlayerData);
+  const addPlayer = (name) => {
+    setPlayers([...players, name]);
+    setScores([...scores, Array(round).fill(0)]);
   };
 
-  const renderPlayerInputs = () => {
-    const playerInputs = [];
-    for (let i = 0; i < numPlayers; i++) {
-      playerInputs.push(
-        <div key={i}>
-          <input
-            type="text"
-            placeholder={`Player ${i + 1} Name`}
-            onChange={(event) => handlePlayerNameChange(i, event.target.value)}
-          />
-        </div>
-      );
-    }
-    return playerInputs;
+  const addScore = (playerIndex, roundIndex, score) => {
+    const newScores = [...scores];
+    newScores[playerIndex][roundIndex] = parseInt(score);
+    setScores(newScores);
   };
 
-  const handlePlayerNameChange = (index, name) => {
-    const newPlayerData = [...playerData];
-    newPlayerData[index] = { name, score: 0 };
-    setPlayerData(newPlayerData);
+  const calculateTotalScores = () => {
+    const totalScores = players.map((_, playerIndex) =>
+      scores[playerIndex].reduce((acc, score) => acc + score, 0)
+    );
+    return totalScores;
   };
+
+  const handleNextRound = () => {
+    setRound(round + 1);
+    setScores(scores.map((playerScores) => [...playerScores, 0]));
+    
+  };
+
+ 
 
   return (
-    <>
     <div className="App">
-      <h3>Score Track by Ramesh Ayyala </h3>
-      {!showTable && (
-        <>
-          <label>Select number of Players: </label>
-          <input type="number" min="1" value={numPlayers} onChange={handleNumPlayersChange} />
-          <div className="player-inputs">
-            {renderPlayerInputs()}
-          </div>
-          <button onClick={handleShowTable}>Show Table</button>
-        </>
-      )}
-      {showTable && (
-        <div>
-          <h2>Score Table:</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Player Name</th>
-                <th> Total Score</th>
-                <tr>
-            {Array.from({ length: columns }, (_, index) => (
-              <th key={index}>Column {index + 1}</th>
-            ))}
-          </tr>
-              </tr>
-            </thead>
-            <tbody>
-              {playerData.map((player, index) => (
-                <tr key={index}>
-                  <td>{player.name || `Player ${index + 1}`}</td>
-                  <td>
-                    <input
-                      type="number"
-                      placeholder="Enter Score"
-                      value={player.score}
-                      
-                    />
-                  </td>
-                  
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          
      
-              <div>
-              <Button onClick={handleOpen}>Add Score</Button>
-              <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-              >
-                <Box sx={style}>
-                <table>
-            <thead>
-              <tr>
-                <th>Player Name</th>
-                <th>Score</th>
-
-              </tr>
-            </thead>
-            <tbody>
-              {playerData.map((player, index) => (
-                <tr key={index}>
-                  <td>{player.name || `Player ${index + 1}`}</td>
-                  <td>
-                    <input
-                      type="number"
-                      placeholder="Enter Score"
-                      value={player.score}
-                      onChange={(event) => handleScoreChange(index, event.target.value)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <Button onClick={addColumn}>Add Scores</Button>
-          <Button onClick={handleClose}>Close</Button>
-                </Box>
-              </Modal>
-            </div>
-        
+     <div>
+      {isDivVisible && (
+        <div>
+           <PlayerForm addPlayer={addPlayer} />
+    
+    {players.map((player, index) => (
+      <li key={index}>{player}</li>
+    ))}
+          <button onClick={handleButtonClick}>Submit</button>
         </div>
       )}
+
+      {!isDivVisible && (
+        <div>
+        <ScoreForm
+        players={players}
+        round={round}
+        addScore={addScore}
+      />
+      <Button onClick={handleOpenT}>Show Score</Button>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={handleCloseT}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={style}>
+            <ScoreTable
+        players={players}
+        round={round}
+        scores={scores}
+        totalScores={calculateTotalScores()}
+      />
+          </Box>
+        </Fade>
+      </Modal>
+      </div>
+      )}
     </div>
-    </>
+
+    </div>
   );
 }
+
+export default App;
