@@ -1,5 +1,4 @@
-// ... (existing code)
-
+import "./App.css";
 function ScoreTable({ players, round, scores, totalScores }) {
     return (
       <div className="score-table">

@@ -3,17 +3,25 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.3",
     "@mui/material": "^5.14.5",
     "@mui/styled-engine-sc": "^5.12.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
+    "file-saver": "^2.0.5",
+    "js2xml": "^1.0.9",
+    "pdfjs": "^2.5.2",
+    "pdfjs-dist": "^3.9.179",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
+    "react-pdf": "^7.3.3",
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
     "styled-components": "^5.3.11",
-    "web-vitals": "^3.0.4"
+    "web-vitals": "^3.0.4",
+    "xml-js": "^1.6.11"
   },
   "scripts": {
     "start": "react-scripts start",
