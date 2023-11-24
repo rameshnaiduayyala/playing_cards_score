@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import Button from "@mui/material/Button";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function PlayerForm({ addPlayer }) {
   const [name, setName] = useState('');
@@ -8,11 +11,16 @@ function PlayerForm({ addPlayer }) {
     if (name.trim() !== '') {
       addPlayer(name);
       setName('');
+      toast.success("Player add Successfully")
+    }
+    else{
+    toast.error("Please Enter Name")
     }
   };
 
   return (
     <div className="player-form">
+      <ToastContainer/>
       <h2>Add Player:</h2>
       <form onSubmit={handleSubmit}>
         <input
@@ -21,7 +29,7 @@ function PlayerForm({ addPlayer }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <button type="submit">Add Player</button>
+        <Button  type="submit">Add Player</Button>
       </form>
     </div>
   );

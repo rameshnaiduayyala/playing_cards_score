@@ -1,33 +1,36 @@
-import "./App.css";
+import React from 'react';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+
 function ScoreTable({ players, round, scores, totalScores }) {
-    return (
-      <div className="score-table">
-        <h2>Score Table:</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Player</th>
+  return (
+    <div className="score-table">
+      <h2>Score Table:</h2>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead className=''>
+            <TableRow>
+              <TableCell>Player</TableCell>
               {[...Array(round)].map((_, index) => (
-                <th key={index}>Round {index + 1}</th>
+                <TableCell key={index}>Round {index + 1}</TableCell>
               ))}
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
+              <TableCell>Total</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {players.map((player, playerIndex) => (
-              <tr key={playerIndex}>
-                <td>{player}</td>
+              <TableRow key={playerIndex}>
+                <TableCell>{player}</TableCell>
                 {scores[playerIndex].map((score, roundIndex) => (
-                  <td key={roundIndex}>{score}</td>
+                  <TableCell key={roundIndex}>{score}</TableCell>
                 ))}
-                <td>{totalScores[playerIndex]}</td>
-              </tr>
+                <TableCell>{totalScores[playerIndex]}</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-  
-  export default ScoreTable;
-  
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
+  );
+}
+
+export default ScoreTable;

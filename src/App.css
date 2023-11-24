@@ -21,7 +21,9 @@ input {
 }
 .list_players{
   list-style: decimal outside;
-  color: crimson;
+  list-style-position: outside;
+  
+  color:darkblue;
 }
 .enter_score{
   align-items: center;

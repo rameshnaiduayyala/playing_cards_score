@@ -10,6 +10,9 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const style = {
   position: "absolute",
@@ -33,7 +36,11 @@ function App() {
   const [isDivVisible, setDivVisible] = useState(true);
 
   const handleButtonClick = () => {
-    setDivVisible(false);
+    if (players.length === 0) {
+      toast.error("Please add at least Two players before submitting.");
+    } else {
+      setDivVisible(false);
+    }
   };
 
   const addPlayer = (name) => {
@@ -58,22 +65,23 @@ function App() {
     setRound(round + 1);
     setScores(scores.map((playerScores) => [...playerScores, 0]));
   };
-  
+
 
   return (
     <>
+     <ToastContainer />
       <div className="App">
         <div className="addplayer">
           {isDivVisible && (
             <div>
               <PlayerForm addPlayer={addPlayer} />
-<div className="list_players">
+              <div className="list_players">
 
-              {players.map((player, index) => (
-                <li key={index}>{player}</li>
-              ))}
+                {players.map((player, index) => (
+                  <li key={index}>{player}</li>
+                ))}
               </div>
-              <button onClick={handleButtonClick}>Submit</button>
+              <Button variant="contained" onClick={handleButtonClick}>Submit</Button>
             </div>
           )}
 
@@ -81,7 +89,7 @@ function App() {
             <div className="enter_score">
               <ScoreForm players={players} round={round} addScore={addScore} /><br></br>
               <div>
-              <Button variant="contained" color="success" onClick={handleNextRound}>Next Round</Button>
+                <Button variant="contained" color="success" onClick={handleNextRound}>Next Round</Button>
               </div><br></br>
               <Button variant="contained" onClick={handleOpenT}>Show Score</Button>
               <Modal
