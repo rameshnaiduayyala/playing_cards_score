@@ -1,36 +1,42 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 
-function ScoreTable({ players, round, scores, totalScores }) {
+const ScoreTable = ({ players, roundScores, calculateTotalScore }) => {
   return (
-    <div className="score-table">
-      <h2>Score Table:</h2>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead className=''>
-            <TableRow>
-              <TableCell>Player</TableCell>
-              {[...Array(round)].map((_, index) => (
-                <TableCell key={index}>Round {index + 1}</TableCell>
-              ))}
-              <TableCell>Total</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {players.map((player, playerIndex) => (
-              <TableRow key={playerIndex}>
-                <TableCell>{player}</TableCell>
-                {scores[playerIndex].map((score, roundIndex) => (
-                  <TableCell key={roundIndex}>{score}</TableCell>
-                ))}
-                <TableCell>{totalScores[playerIndex]}</TableCell>
-              </TableRow>
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Round</TableCell>
+            {players.map((player, index) => (
+              <TableCell key={index}>{player}</TableCell>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+            <TableCell>Total Score</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {roundScores.map((round, roundIndex) => (
+            <TableRow key={roundIndex}>
+              <TableCell>Round {roundIndex + 1}</TableCell>
+              {round.map((score, playerIndex) => (
+                <TableCell key={playerIndex}>{score}</TableCell>
+              ))}
+              <TableCell></TableCell>
+            </TableRow>
+          ))}
+          <TableRow>
+            <TableCell>Total Score</TableCell>
+            {players.map((player, playerIndex) => (
+              <TableCell key={playerIndex}>
+                {calculateTotalScore(playerIndex)}
+              </TableCell>
+            ))}
+            <TableCell></TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
-}
+};
 
 export default ScoreTable;

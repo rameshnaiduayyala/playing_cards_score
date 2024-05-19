@@ -1,127 +1,160 @@
-import React, { useState } from "react";
-import "./App.css";
+import React, { useState } from 'react';
+import { Container, Typography, TextField, Button, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import ScoreTable from './ScoreTable';
 
-// import PlayerList from './PlayerList';
-import ScoreTable from "./ScoreTable";
-import PlayerForm from "./PlayerForm";
-import ScoreForm from "./ScoreForm";
-import Backdrop from "@mui/material/Backdrop";
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
-import Fade from "@mui/material/Fade";
-import Button from "@mui/material/Button";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
-function App() {
+const App = () => {
   const [players, setPlayers] = useState([]);
-  const [round, setRound] = useState(1);
-  const [scores, setScores] = useState([]);
-  const [open, setOpen] = React.useState(false);
-  const handleOpenT = () => setOpen(true);
-  const handleCloseT = () => setOpen(false);
-  const [isDivVisible, setDivVisible] = useState(true);
+  const [roundScores, setRoundScores] = useState([]);
+  const [currentRoundScores, setCurrentRoundScores] = useState(Array(players.length).fill(0));
+  const [showScores, setShowScores] = useState(false);
 
-  const handleButtonClick = () => {
-    if (players.length === 0) {
-      toast.error("Please add at least Two players before submitting.");
-    } else {
-      setDivVisible(false);
-    }
+  const handlePlayerSubmit = (names) => {
+    setPlayers(names);
   };
 
-  const addPlayer = (name) => {
-    setPlayers([...players, name]);
-    setScores([...scores, Array(round).fill(0)]);
+  const handleRoundScoresSubmit = () => {
+    setRoundScores([...roundScores, currentRoundScores]);
+    setCurrentRoundScores(Array(players.length).fill(0));
   };
 
-  const addScore = (playerIndex, roundIndex, score) => {
-    const newScores = [...scores];
-    newScores[playerIndex][roundIndex] = parseInt(score);
-    setScores(newScores);
+  const handleScoreChange = (index, value) => {
+    const updatedScores = [...currentRoundScores];
+    updatedScores[index] = parseInt(value) || 0;
+    setCurrentRoundScores(updatedScores);
   };
 
-  const calculateTotalScores = () => {
-    const totalScores = players.map((_, playerIndex) =>
-      scores[playerIndex].reduce((acc, score) => acc + score, 0)
-    );
-    return totalScores;
+  const calculateTotalScore = (playerIndex) => {
+    return roundScores.reduce((acc, curr) => {
+      return acc + curr[playerIndex];
+    }, 0);
   };
 
-  const handleNextRound = () => {
-    setRound(round + 1);
-    setScores(scores.map((playerScores) => [...playerScores, 0]));
+  const toggleScoreTable = () => {
+    setShowScores(!showScores);
   };
-
 
   return (
-    <>
-     <ToastContainer />
-      <div className="App">
-        <div className="addplayer">
-          {isDivVisible && (
-            <div>
-              <PlayerForm addPlayer={addPlayer} />
-              <div className="list_players">
-
-                {players.map((player, index) => (
-                  <li key={index}>{player}</li>
-                ))}
-              </div>
-              <Button variant="contained" onClick={handleButtonClick}>Submit</Button>
-            </div>
-          )}
-
-          {!isDivVisible && (
-            <div className="enter_score">
-              <ScoreForm players={players} round={round} addScore={addScore} /><br></br>
-              <div>
-                <Button variant="contained" color="success" onClick={handleNextRound}>Next Round</Button>
-              </div><br></br>
-              <Button variant="contained" onClick={handleOpenT}>Show Score</Button>
-              <Modal
-                aria-labelledby="transition-modal-title"
-                aria-describedby="transition-modal-description"
-                open={open}
-                onClose={handleCloseT}
-                closeAfterTransition
-                slots={{ backdrop: Backdrop }}
-                slotProps={{
-                  backdrop: {
-                    timeout: 500,
-                  },
-                }}
-              >
-                <Fade in={open}>
-                  <Box sx={style}>
-                    <ScoreTable
-                      players={players}
-                      round={round}
-                      scores={scores}
-                      totalScores={calculateTotalScores()}
-                    />
-                  </Box>
-                </Fade>
-              </Modal>
-            </div>
-          )}
-        </div>
-      </div>
-    </>
+    <Container maxWidth="md">
+      <Typography variant="h4" gutterBottom>
+         Game Score App
+      </Typography>
+      {players.length === 0 ? (
+        <PlayerForm onSubmit={handlePlayerSubmit} />
+      ) : (
+        <>
+          <Typography variant="h5" gutterBottom>
+            Round {roundScores.length + 1}
+          </Typography>
+          <ScoreInput players={players} currentRoundScores={currentRoundScores} onScoreChange={handleScoreChange} onSubmit={handleRoundScoresSubmit} />
+          <Typography variant="h5" gutterBottom>
+            Scores
+          </Typography>
+          <Button onClick={toggleScoreTable} variant="contained" color="primary">
+            {showScores ? 'Hide Scores' : 'Show Scores'}
+          </Button>
+          <ScoreModal open={showScores} onClose={toggleScoreTable} players={players} roundScores={roundScores} calculateTotalScore={calculateTotalScore} />
+        </>
+      )}
+    </Container>
   );
-}
+};
+
+const PlayerForm = ({ onSubmit }) => {
+  const [names, setNames] = useState([]);
+  const [currentName, setCurrentName] = useState('');
+
+  const handleAddPlayer = () => {
+    setNames([...names, currentName]);
+    setCurrentName('');
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(names);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Typography variant="h5" gutterBottom>
+        Enter Player Names
+      </Typography>
+      {names.map((name, index) => (
+        <Typography key={index} variant="body1">
+          {name}
+        </Typography>
+      ))}
+      <TextField
+        label="Player Name"
+        variant="outlined"
+        fullWidth
+        value={currentName}
+        onChange={(e) => setCurrentName(e.target.value)}
+      />
+      <Button onClick={handleAddPlayer} variant="contained" color="primary">
+        Add Player
+      </Button>
+      <Button type="submit" variant="contained" color="primary" fullWidth disabled={names.length === 0}>
+        Start Game
+      </Button>
+    </form>
+  );
+};
+
+const ScoreInput = ({ players, currentRoundScores, onScoreChange, onSubmit }) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit();
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Player</TableCell>
+              <TableCell>Score</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {players.map((player, index) => (
+              <TableRow key={index}>
+                <TableCell>{player}</TableCell>
+                <TableCell>
+                  <TextField
+                    type="number"
+                    variant="outlined"
+                    fullWidth
+                    value={currentRoundScores[index]}
+                    onChange={(e) => onScoreChange(index, e.target.value)}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Button type="submit" variant="contained" color="primary" fullWidth>
+        Submit Round
+      </Button>
+    </form>
+  );
+};
+
+const ScoreModal = ({ open, onClose, players, roundScores, calculateTotalScore }) => {
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Scores</DialogTitle>
+      <DialogContent>
+        <ScoreTable players={players} roundScores={roundScores} calculateTotalScore={calculateTotalScore} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="primary">
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 export default App;
