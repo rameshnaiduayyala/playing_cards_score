@@ -33,14 +33,10 @@ const App = () => {
   };
 
   const calculateTotalScore = (playerIndex) => {
-    return roundScores.reduce((acc, curr) => {
-      return acc + curr[playerIndex];
-    }, 0);
+    return roundScores.reduce((acc, curr) => acc + curr[playerIndex], 0);
   };
 
-  const toggleScoreTable = () => {
-    setShowScores(!showScores);
-  };
+  const toggleScoreTable = () => setShowScores(!showScores);
 
   const handleEndGame = () => {
     localStorage.removeItem('players');
@@ -62,9 +58,9 @@ const App = () => {
           <Typography variant="h5" gutterBottom>
             Round {roundScores.length + 1}
           </Typography>
-          <ScoreInput players={players} currentRoundScores={currentRoundScores} onScoreChange={handleScoreChange} />
-          <Button onClick={handleRoundScoresSubmit} variant="contained" color="primary">
-            Submit Round
+          <ScoreInput players={players} currentRoundScores={currentRoundScores} onScoreChange={handleScoreChange} onSubmit={handleRoundScoresSubmit} />
+          <Button onClick={handleEndGame} variant="contained" color="secondary" fullWidth>
+            End Game
           </Button>
           <Typography variant="h5" gutterBottom>
             Scores
@@ -73,9 +69,6 @@ const App = () => {
             {showScores ? 'Hide Scores' : 'Show Scores'}
           </Button>
           <ScoreModal open={showScores} onClose={toggleScoreTable} players={players} roundScores={roundScores} calculateTotalScore={calculateTotalScore} />
-          <Button onClick={handleEndGame} variant="contained" color="secondary">
-            End Game
-          </Button>
         </>
       )}
     </Container>
@@ -123,34 +116,44 @@ const PlayerForm = ({ onSubmit }) => {
   );
 };
 
-const ScoreInput = ({ players, currentRoundScores, onScoreChange }) => {
+const ScoreInput = ({ players, currentRoundScores, onScoreChange, onSubmit }) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit();
+  };
+
   return (
-    <TableContainer>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Player</TableCell>
-            <TableCell>Score</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {players.map((player, index) => (
-            <TableRow key={index}>
-              <TableCell>{player}</TableCell>
-              <TableCell>
-                <TextField
-                  type="number"
-                  variant="outlined"
-                  fullWidth
-                  value={currentRoundScores[index]}
-                  onChange={(e) => onScoreChange(index, e.target.value)}
-                />
-              </TableCell>
+    <form onSubmit={handleSubmit}>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Player</TableCell>
+              <TableCell>Score</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {players.map((player, index) => (
+              <TableRow key={index}>
+                <TableCell>{player}</TableCell>
+                <TableCell>
+                  <TextField
+                    type="number"
+                    variant="outlined"
+                    fullWidth
+                    value={currentRoundScores[index]}
+                    onChange={(e) => onScoreChange(index, e.target.value)}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Button type="submit" variant="contained" color="primary" fullWidth>
+        Submit Round
+      </Button>
+    </form>
   );
 };
 
