@@ -11,7 +11,7 @@ const ScoreTable = ({ players, roundScores, calculateTotalScore }) => {
             {players.map((player, index) => (
               <TableCell key={index}>{player}</TableCell>
             ))}
-            <TableCell>Total Score</TableCell>
+            {/* <TableCell>Total Score</TableCell> */}
           </TableRow>
         </TableHead>
         <TableBody>
